@@ -1,6 +1,6 @@
 const COUPLE_PHOTO_SOURCES = [
   "assets/couple.jpg",
-  "file:///C:/Users/coola/OneDrive/Desktop/backup/assets/images/hero.jpg",
+  "assets/images/hero.jpg",
   "assets/hero.svg"
 ];
 

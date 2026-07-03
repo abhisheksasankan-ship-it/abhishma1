@@ -180,10 +180,11 @@
                 Wedding Invitation
               </p>
               
-              <h1 className="serif text-5xl sm:text-6xl md:text-[5rem] mb-2 leading-none text-white tracking-wide drop-shadow-xl">
-                <span className="block">Dr. Abhishek S</span>
-                <span className="block text-[#c9963c] text-4xl md:text-6xl italic my-2">&</span>
-                <span className="block">Dr. Reshma R</span>
+              {/* FIXED ORPHAN LETTERS: Adjusted sizing for ultra-small screens & added non-breaking spaces (&nbsp;) */}
+              <h1 className="serif text-[2.5rem] sm:text-5xl md:text-[5rem] mb-2 leading-none text-white tracking-wide drop-shadow-xl">
+                <span className="block">Dr. Abhishek&nbsp;S</span>
+                <span className="block text-[#c9963c] text-3xl md:text-6xl italic my-2">&</span>
+                <span className="block">Dr. Reshma&nbsp;R</span>
               </h1>
               
               <p className="text-lg md:text-xl font-bold text-white/90 mt-8 mb-10 drop-shadow-md">Thursday, 10 September 2026</p>
@@ -203,10 +204,11 @@
                 we joyfully invite you to share in our happiness and celebrate the wedding of
               </p>
               
+              {/* FIXED ORPHAN LETTERS */}
               <div className="serif text-4xl md:text-5xl text-[#6f1f2d] space-y-6 mb-12">
-                <span className="block">Dr. Abhishek S</span>
+                <span className="block">Dr. Abhishek&nbsp;S</span>
                 <span className="block text-[#c9963c] text-[10px] md:text-xs font-sans font-bold tracking-[0.2em] uppercase">With</span> 
-                <span className="block">Dr. Reshma R</span>
+                <span className="block">Dr. Reshma&nbsp;R</span>
               </div>
               
               <div className="mt-12 mb-4">
@@ -363,10 +365,12 @@
                 {galleryImages.map((src, index) => {
                   const diff = (index - currentImg + 6) % 6;
                   
+                  // FIXED MOBILE LAG: Removed "all", added will-change, isolated transform and opacity for GPU
                   let positionStyle = { 
                     transform: 'translateX(-50%) scale(0.4)', 
                     opacity: 0, zIndex: 0, pointerEvents: 'none',
-                    transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+                    willChange: 'transform, opacity',
+                    transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
                   };
 
                   if (diff === 0) {
@@ -374,19 +378,22 @@
                       transform: 'translateX(-50%) scale(1)', 
                       opacity: 1, zIndex: 30, pointerEvents: 'auto', cursor: 'zoom-in',
                       boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-                      transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+                      willChange: 'transform, opacity',
+                      transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
                     };
                   } else if (diff === 1) {
                     positionStyle = { 
                       transform: 'translateX(10%) scale(0.75)', 
                       opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer',
-                      transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+                      willChange: 'transform, opacity',
+                      transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
                     };
                   } else if (diff === 5) {
                     positionStyle = { 
                       transform: 'translateX(-110%) scale(0.75)', 
                       opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer',
-                      transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)'
+                      willChange: 'transform, opacity',
+                      transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
                     };
                   }
 
@@ -420,47 +427,58 @@
             </div>
           </section>
 
-          {/* NEW Integrated Wishes & Memories Section */}
+          {/* NEW Integrated Wishes Section (Form Only) */}
           <section id="wishes" className="py-20 md:py-24 px-6 bg-[#43151d] text-[#fffaf0] text-center" data-aos="fade-up">
-            <div className="max-w-4xl mx-auto">
-              <p className="text-[#f1d38a] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">💌 Wishes & Memories</p>
-              <h2 className="serif text-4xl md:text-5xl mb-6">Leave Us a Message ❤️</h2>
+            <div className="max-w-3xl mx-auto">
+              
+              {/* FIXED WISHES TITLE (Option B) */}
+              <p className="text-[#f1d38a] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">💌 Wedding Wishes</p>
+              <h2 className="serif text-4xl md:text-5xl mb-6">Send Your Love & Blessings</h2>
               <p className="text-sm md:text-lg opacity-80 mb-12 leading-relaxed px-4">
-                Your heartfelt wishes will make our celebration even more special.<br className="hidden md:block"/>
-                We'd also love for you to share your favourite photos from the function!
+                Your heartfelt wishes will make our celebration even more special.
               </p>
               
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-stretch justify-center">
+              <div className="bg-[#fffaf0] rounded-xl shadow-2xl p-8 md:p-10 border border-[#c9963c]/30">
                 
-                {/* 1. Form Embed Container (Width 100%, Height 550px for ideal fit) */}
-                <div className="w-full md:w-1/2 bg-[#fffaf0] rounded-xl overflow-hidden shadow-2xl p-2 md:p-3 border border-[#c9963c]/30">
-                  <iframe 
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSe6q-nq6jOnJRNxhEUpwumXiRDav-YtAqEB-bghwNEvq1AC9A/viewform?embedded=true" 
-                    width="100%" 
-                    height="550" 
-                    frameBorder="0" 
-                    marginHeight="0" 
-                    marginWidth="0" 
-                    className="w-full rounded-lg bg-transparent">
-                    Loading…
-                  </iframe>
-                </div>
+                {/* NETLIFY FORM INTEGRATION */}
+                <form 
+                  name="wedding-wishes" 
+                  method="POST" 
+                  data-netlify="true" 
+                  className="flex flex-col gap-6 text-left"
+                >
+                  {/* Required hidden input for Netlify forms */}
+                  <input type="hidden" name="form-name" value="wedding-wishes" />
 
-                {/* 2. Photo Upload Call-to-Action */}
-                <div className="w-full md:w-1/2 bg-gradient-to-br from-[#2a1a1c] to-[#43151d] p-8 md:p-10 rounded-xl border border-[#c9963c]/30 shadow-2xl flex flex-col items-center justify-center">
-                  <div className="text-5xl md:text-6xl mb-6 drop-shadow-md">📸</div>
-                  <h3 className="serif text-3xl text-[#f1d38a] mb-4">Share Your Snaps</h3>
-                  <p className="text-sm md:text-base opacity-80 mb-8 px-2 text-[#fffaf0]">
-                    Help us capture every moment! Upload the photos and videos you take directly to our secure folder.
-                  </p>
-                  <a 
-                    href="https://forms.gle/3sRCqhko5Gxfh61U8" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center bg-[#c9963c] text-[#2a241d] px-8 py-4 rounded-full font-bold shadow-lg hover:bg-[#f1d38a] transition hover:-translate-y-1 w-full max-w-[250px] text-sm md:text-base tracking-wide uppercase">
-                    Upload Photos
-                  </a>
-                </div>
+                  <div>
+                    <label className="block text-[#c9963c] text-xs font-bold uppercase tracking-widest mb-2">Your Name</label>
+                    <input 
+                      type="text" 
+                      name="name" 
+                      required 
+                      className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition" 
+                      placeholder="e.g. Rahul & Priya" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#c9963c] text-xs font-bold uppercase tracking-widest mb-2">Your Wish</label>
+                    <textarea 
+                      name="wish" 
+                      required 
+                      rows="5" 
+                      className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition resize-y" 
+                      placeholder="Write your heartfelt message here..."
+                    ></textarea>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    className="w-full bg-[#6f1f2d] text-white py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#c9963c] hover:text-[#2a241d] transition-all duration-300 shadow-md mt-4"
+                  >
+                    Send Wish
+                  </button>
+                </form>
 
               </div>
             </div>
