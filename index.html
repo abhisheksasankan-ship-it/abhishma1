@@ -5,19 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dr. Abhishek S & Dr. Reshma R | Wedding Invitation</title>
   
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png">
   
+  <!-- Social Media & WhatsApp Preview Tags -->
   <meta property="og:title" content="Dr. Abhishek & Dr. Reshma | Wedding Invitation">
   <meta property="og:description" content="Join our celebration!">
   <meta property="og:image" content="https://abhishma.vercel.app/assets/images/hero.jpg">
   <meta property="og:url" content="https://abhishma.vercel.app/">
   <meta property="og:type" content="website">
 
+  <!-- Tailwind & React -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
+  <!-- AOS Animation Library CSS -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   
   <style>
@@ -28,7 +32,6 @@
     .monogram { font-family: 'Pinyon Script', cursive; }
     html { scroll-behavior: smooth; }
     
-    /* Utility to stop blue highlighting when dragging on laptop */
     .no-select {
       -webkit-user-select: none;
       -ms-user-select: none;
@@ -38,31 +41,27 @@
 </head>
 <body>
   
-  <form name="wedding-wishes" data-netlify="true" hidden>
+  <!-- NETLIFY DATABASE TRIGGER (HIDDEN) -->
+  <form name="wedding-wishes" data-netlify="true" netlify hidden>
     <input type="text" name="name" />
     <textarea name="wish"></textarea>
   </form>
 
   <div id="root"></div>
 
+  <!-- AOS Animation Library JS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
     function App() {
-      // Initialize Scroll Animations
       useEffect(() => {
         if (window.AOS) {
-          window.AOS.init({
-            duration: 600, 
-            once: true,
-            offset: 50,    
-          });
+          window.AOS.init({ duration: 600, once: true, offset: 50 });
         }
       }, []);
 
-      // Scroll Detection
       const [isScrolled, setIsScrolled] = useState(false);
       useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -70,7 +69,6 @@
         return () => window.removeEventListener("scroll", handleScroll);
       }, []);
 
-      // Countdown Timer
       const calculateTimeLeft = () => {
         const diff = +new Date("2026-09-10T12:05:00") - +new Date();
         return diff > 0 ? {
@@ -87,7 +85,6 @@
         return () => clearTimeout(timer);
       });
 
-      // Gallery Carousel & Lightbox
       const [currentImg, setCurrentImg] = useState(0);
       const [isPaused, setIsPaused] = useState(false);
       const [lightboxImg, setLightboxImg] = useState(null);
@@ -108,9 +105,7 @@
 
       useEffect(() => {
         if (isPaused || lightboxImg) return; 
-        const interval = setInterval(() => {
-          nextImg();
-        }, 3000); 
+        const interval = setInterval(() => { nextImg(); }, 3000); 
         return () => clearInterval(interval);
       }, [isPaused, lightboxImg, currentImg]);
 
@@ -120,17 +115,12 @@
         setIsPaused(true);
       };
 
-      const handleMove = (clientX) => {
-        touchEndX.current = clientX;
-      };
+      const handleMove = (clientX) => { touchEndX.current = clientX; };
 
       const handleEnd = () => {
         const diffX = touchStartX.current - touchEndX.current;
-        if (diffX > 40) {
-          nextImg(); 
-        } else if (diffX < -40) {
-          prevImg(); 
-        }
+        if (diffX > 40) nextImg(); 
+        else if (diffX < -40) prevImg(); 
         setTimeout(() => setIsPaused(false), 4000); 
       };
 
@@ -138,27 +128,36 @@
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
       };
 
+      // SILENT FORM SUBMISSION (AJAX)
+      const handleWishSubmit = (e) => {
+        e.preventDefault(); // Stops the browser from refreshing and hitting the 404
+        const form = e.target;
+        const formData = new FormData(form);
+
+        fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString()
+        })
+        .then(() => {
+          alert("Thank you! Your wish has been sent to Abhishek & Reshma. ❤️");
+          form.reset(); // Clears the form fields
+        })
+        .catch((error) => alert("Oops! Something went wrong. Please try again."));
+      };
+
       return (
         <div className="overflow-x-hidden relative bg-[#fffaf0]">
           
-          {/* Floating Oval Back-to-Top AR Button */}
-          <a 
-            href="#" 
-            className={`fixed right-4 md:right-8 z-50 flex flex-col items-center justify-center border border-[#c9963c] bg-[#43151d] text-[#c9963c] rounded-[2rem] w-12 h-16 md:w-14 md:h-20 shadow-2xl transition-all duration-500 hover:bg-[#c9963c] hover:text-[#43151d] hover:scale-110 ${isScrolled ? 'bottom-6 md:bottom-8 opacity-100 translate-y-0' : 'bottom-0 opacity-0 translate-y-10 pointer-events-none'}`}
-            aria-label="Back to top"
-          >
+          <a href="#" className={`fixed right-4 md:right-8 z-50 flex flex-col items-center justify-center border border-[#c9963c] bg-[#43151d] text-[#c9963c] rounded-[2rem] w-12 h-16 md:w-14 md:h-20 shadow-2xl transition-all duration-500 hover:bg-[#c9963c] hover:text-[#43151d] hover:scale-110 ${isScrolled ? 'bottom-6 md:bottom-8 opacity-100 translate-y-0' : 'bottom-0 opacity-0 translate-y-10 pointer-events-none'}`} aria-label="Back to top">
             <span className="text-sm md:text-lg font-bold mb-0.5">↑</span>
-            <div className="monogram text-xl md:text-2xl leading-none tracking-wider pr-1">
-              AR
-            </div>
+            <div className="monogram text-xl md:text-2xl leading-none tracking-wider pr-1">AR</div>
           </a>
 
-          {/* Navigation Bar */}
           <header className={`fixed top-0 w-full flex justify-between items-center px-4 md:px-8 z-50 transition-all duration-500 ${isScrolled ? 'bg-[#43151d]/40 backdrop-blur-md shadow-sm py-3' : 'bg-gradient-to-b from-[#43151d]/70 to-transparent py-5'}`}>
             <div className="bg-[#43151d] border border-[#c9963c] rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-[#c9963c] flex-shrink-0 shadow-md">
               <span className="monogram text-2xl md:text-3xl leading-none pr-1 mt-1">AR</span>
             </div>
-            
             <nav className="flex flex-wrap justify-end gap-3 md:gap-8 text-[9px] md:text-xs font-bold uppercase tracking-[0.15em] text-white/90">
               <a href="#invitation" className="hover:text-[#c9963c] transition">Invitation</a>
               <a href="#couple" className="hover:text-[#c9963c] transition">Couple</a>
@@ -168,27 +167,20 @@
             </nav>
           </header>
 
-          {/* Hero Section */}
           <section className="relative min-h-[90vh] md:h-screen w-full flex items-center pt-20 pb-12 bg-[#43151d] overflow-hidden">
             <img src="assets/images/hero.jpg" alt="Couple" className="absolute inset-0 w-full h-full object-cover object-center z-0" />
-            
             <div className="absolute inset-0 bg-gradient-to-r from-[#2a1a1c]/95 via-[#432329]/60 to-transparent z-10"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-[#fffaf0] via-transparent to-transparent z-10"></div>
-            
             <div className="relative z-20 text-white w-full max-w-3xl px-6 md:px-12 drop-shadow-lg mt-12 md:mt-24" data-aos="fade-right">
               <p className="text-[#c9963c] uppercase tracking-[0.2em] font-bold text-xs md:text-sm mb-6 flex items-center gap-2">
-                <span className="w-6 md:w-8 h-px bg-[#c9963c]"></span>
-                Wedding Invitation
+                <span className="w-6 md:w-8 h-px bg-[#c9963c]"></span>Wedding Invitation
               </p>
-              
               <h1 className="serif text-[2.5rem] sm:text-5xl md:text-[5rem] mb-2 leading-none text-white tracking-wide drop-shadow-xl">
                 <span className="block">Dr. Abhishek&nbsp;S</span>
                 <span className="block text-[#c9963c] text-3xl md:text-6xl italic my-2">&</span>
                 <span className="block">Dr. Reshma&nbsp;R</span>
               </h1>
-              
               <p className="text-lg md:text-xl font-bold text-white/90 mt-8 mb-10 drop-shadow-md">Thursday, 10 September 2026</p>
-              
               <div className="flex flex-col sm:flex-row gap-4">
                 <a href="#events" className="text-center bg-[#c9963c] text-[#2a241d] px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-amber-500 transition">View Events</a>
                 <a href="#wishes" className="text-center border-2 border-[#43151d] text-[#43151d] bg-transparent backdrop-blur-sm px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-[#43151d] hover:text-white transition">Leave a Wish</a>
@@ -196,29 +188,21 @@
             </div>
           </section>
 
-          {/* Invitation Section */}
           <section id="invitation" className="py-20 md:py-28 px-4 md:px-6 text-center max-w-4xl mx-auto flex flex-col items-center" data-aos="fade-up">
             <div className="w-full border-t border-b border-[#c9963c] py-12 md:py-16">
               <h2 className="serif text-3xl md:text-4xl text-[#2a241d] mb-4">Together with our families,</h2>
-              <p className="text-gray-600 text-sm md:text-base font-medium mb-12 px-4">
-                we joyfully invite you to share in our happiness and celebrate the wedding of
-              </p>
-              
+              <p className="text-gray-600 text-sm md:text-base font-medium mb-12 px-4">we joyfully invite you to share in our happiness and celebrate the wedding of</p>
               <div className="serif text-4xl md:text-5xl text-[#6f1f2d] space-y-6 mb-12">
                 <span className="block">Dr. Abhishek&nbsp;S</span>
                 <span className="block text-[#c9963c] text-[10px] md:text-xs font-sans font-bold tracking-[0.2em] uppercase">With</span> 
                 <span className="block">Dr. Reshma&nbsp;R</span>
               </div>
-              
               <div className="mt-12 mb-4">
-                <a href="#events" className="inline-block border border-[#6f1f2d] text-[#6f1f2d] bg-transparent hover:bg-[#6f1f2d] hover:text-white px-8 py-3.5 rounded-full font-bold uppercase tracking-widest text-xs transition-all shadow-sm">
-                  View Detailed Events
-                </a>
+                <a href="#events" className="inline-block border border-[#6f1f2d] text-[#6f1f2d] bg-transparent hover:bg-[#6f1f2d] hover:text-white px-8 py-3.5 rounded-full font-bold uppercase tracking-widest text-xs transition-all shadow-sm">View Detailed Events</a>
               </div>
             </div>
           </section>
 
-          {/* Bride & Groom Section */}
           <section id="couple" className="py-16 md:py-24 px-6 bg-[#f4eadf]">
             <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-10 md:gap-16 items-center">
               <div className="w-full md:w-2/5" data-aos="fade-right">
@@ -227,11 +211,9 @@
                   <img src="assets/images/hero.jpg" alt="Couple Portrait" className="w-full aspect-[4/5] object-cover object-center rounded-lg shadow-inner" />
                 </div>
               </div>
-              
               <div className="w-full md:w-3/5" data-aos="fade-left">
                 <p className="text-[#6f1f2d] uppercase tracking-[0.15em] font-bold text-xs md:text-sm mb-4 text-center md:text-left">Bride & Groom</p>
                 <h2 className="serif text-4xl md:text-5xl mb-10 text-[#2a241d] text-center md:text-left">Two families, one celebration.</h2>
-                
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="bg-[#fffaf0]/90 p-6 rounded-xl shadow-md border border-[#c9963c]/20" data-aos="fade-up" data-aos-delay="50">
                     <p className="text-[#c9963c] uppercase tracking-widest font-bold text-[10px] mb-3">Groom</p>
@@ -239,7 +221,6 @@
                     <p className="text-gray-600 text-xs mb-4">S/O Mr. Sasankan N & Mrs. Valsamma TV</p>
                     <p className="text-[#2a241d] font-bold text-sm leading-relaxed">Vayaloram<br/>Muthukulam<br/>Alappuzha</p>
                   </div>
-                  
                   <div className="bg-[#fffaf0]/90 p-6 rounded-xl shadow-md border border-[#c9963c]/20" data-aos="fade-up" data-aos-delay="150">
                     <p className="text-[#c9963c] uppercase tracking-widest font-bold text-[10px] mb-3">Bride</p>
                     <h3 className="serif text-2xl text-[#6f1f2d] mb-2">Dr. Reshma R</h3>
@@ -251,18 +232,14 @@
             </div>
           </section>
 
-          {/* Events Section & Maroon Timer Blocks */}
           <section id="events" className="py-20 md:py-24 px-4 md:px-6 bg-[#f7ead8]">
             <div className="max-w-5xl mx-auto">
-              
               <div className="text-center mb-16" data-aos="fade-up">
                 <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">Wedding Details</p>
                 <h2 className="serif text-4xl md:text-5xl text-[#2a241d]">Please join us for the ceremonies.</h2>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                
-                {/* Event 1 */}
                 <div className="md:col-span-2 bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-[#c9963c]/20 flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden" data-aos="fade-up">
                   <div className="flex-1 z-10">
                     <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-3">💍 Wedding Ceremony</p>
@@ -284,7 +261,6 @@
                   </div>
                 </div>
 
-                {/* Event 2 */}
                 <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#c9963c]/20 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="50">
                   <div>
                     <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-1">🌸 Wedding Eve Reception</p>
@@ -303,7 +279,6 @@
                   </div>
                 </div>
 
-                {/* Event 3 */}
                 <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-[#c9963c]/20 flex flex-col justify-between" data-aos="fade-up" data-aos-delay="150">
                   <div>
                     <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-1">🎉 Wedding Reception</p>
@@ -323,7 +298,6 @@
                 </div>
               </div>
 
-              {/* Maroon Timer Blocks */}
               <div className="mt-20 md:mt-24 text-center" data-aos="fade-up">
                 <p className="serif text-3xl md:text-4xl text-[#6f1f2d] mb-8 font-semibold">Counting Down To Our Forever</p>
                 <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 max-w-full px-2">
@@ -339,16 +313,13 @@
                   )}
                 </div>
               </div>
-              
             </div>
           </section>
 
-          {/* Interactive 3D Gallery Carousel */}
           <section id="gallery" className="py-20 md:py-24 px-4 bg-[#fffaf0] overflow-hidden">
             <div className="max-w-5xl mx-auto text-center" data-aos="fade-up">
               <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">📸 Our Moments</p>
               <h2 className="serif text-4xl md:text-5xl mb-12 text-[#2a241d]">A few memories before we begin forever.</h2>
-              
               <div 
                 className="relative h-[300px] sm:h-[400px] md:h-[550px] w-full flex items-center justify-center mt-8 mb-8 cursor-grab active:cursor-grabbing no-select"
                 style={{ touchAction: 'pan-y' }}
@@ -364,7 +335,6 @@
                 {galleryImages.map((src, index) => {
                   const diff = (index - currentImg + 6) % 6;
                   
-                  // BASE STYLES for Strict Hardware Acceleration on Mobile
                   const baseStyle = {
                     willChange: 'transform, opacity',
                     backfaceVisibility: 'hidden',
@@ -405,10 +375,7 @@
                       className="absolute top-0 left-1/2 w-[80%] sm:w-[60%] md:w-[75%] max-w-[320px] md:max-w-[400px] aspect-[4/5] rounded-2xl overflow-hidden"
                       style={positionStyle}
                       onClick={(e) => {
-                        if (Math.abs(touchStartX.current - touchEndX.current) > 10) {
-                          e.preventDefault();
-                          return;
-                        }
+                        if (Math.abs(touchStartX.current - touchEndX.current) > 10) { e.preventDefault(); return; }
                         if (diff === 1) nextImg();
                         else if (diff === 5) prevImg();
                         else if (diff === 0) setLightboxImg(src); 
@@ -420,7 +387,6 @@
                   );
                 })}
               </div>
-
               <div className="flex justify-center gap-2 md:gap-3 mt-4">
                 {galleryImages.map((_, idx) => (
                   <div key={idx} onClick={() => setCurrentImg(idx)} className={`h-1.5 md:h-2 rounded-full cursor-pointer transition-all duration-500 ${currentImg === idx ? 'w-6 md:w-8 bg-[#c9963c]' : 'w-2 bg-[#c9963c]/40'}`}></div>
@@ -429,53 +395,33 @@
             </div>
           </section>
 
-          {/* Integrated Wishes Section */}
           <section id="wishes" className="py-20 md:py-24 px-6 bg-[#43151d] text-[#fffaf0] text-center" data-aos="fade-up">
             <div className="max-w-3xl mx-auto">
-              
               <p className="text-[#f1d38a] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">💌 Wedding Wishes</p>
               <h2 className="serif text-4xl md:text-5xl mb-6">Send Your Love & Blessings</h2>
-              <p className="text-sm md:text-lg opacity-80 mb-12 leading-relaxed px-4">
-                Your heartfelt wishes will make our celebration even more special.
-              </p>
+              <p className="text-sm md:text-lg opacity-80 mb-12 leading-relaxed px-4">Your heartfelt wishes will make our celebration even more special.</p>
               
               <div className="bg-[#fffaf0] rounded-xl shadow-2xl p-8 md:p-10 border border-[#c9963c]/30">
                 
-                {/* NETLIFY REACT FORM */}
+                {/* NEW: Hooked up to our silent background submission function! */}
                 <form 
                   name="wedding-wishes" 
-                  method="POST" 
-                  data-netlify="true" 
+                  onSubmit={handleWishSubmit}
                   className="flex flex-col gap-6 text-left"
                 >
                   <input type="hidden" name="form-name" value="wedding-wishes" />
 
                   <div>
                     <label className="block text-[#c9963c] text-xs font-bold uppercase tracking-widest mb-2">Your Name</label>
-                    <input 
-                      type="text" 
-                      name="name" 
-                      required 
-                      className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition" 
-                      placeholder="e.g. Rahul & Priya" 
-                    />
+                    <input type="text" name="name" required className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition" placeholder="e.g. Rahul & Priya" />
                   </div>
 
                   <div>
                     <label className="block text-[#c9963c] text-xs font-bold uppercase tracking-widest mb-2">Your Wish</label>
-                    <textarea 
-                      name="wish" 
-                      required 
-                      rows="5" 
-                      className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition resize-y" 
-                      placeholder="Write your heartfelt message here..."
-                    ></textarea>
+                    <textarea name="wish" required rows="5" className="w-full bg-[#f7ead8] border border-[#c9963c]/40 rounded-lg p-4 text-[#2a241d] font-semibold focus:outline-none focus:border-[#6f1f2d] focus:ring-2 focus:ring-[#6f1f2d]/50 transition resize-y" placeholder="Write your heartfelt message here..."></textarea>
                   </div>
 
-                  <button 
-                    type="submit" 
-                    className="w-full bg-[#6f1f2d] text-white py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#c9963c] hover:text-[#2a241d] transition-all duration-300 shadow-md mt-4"
-                  >
+                  <button type="submit" className="w-full bg-[#6f1f2d] text-white py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#c9963c] hover:text-[#2a241d] transition-all duration-300 shadow-md mt-4">
                     Send Wish
                   </button>
                 </form>
@@ -484,7 +430,6 @@
             </div>
           </section>
 
-          {/* Footer */}
           <footer className="bg-[#1f1916] text-[#fffaf0] text-center py-12 md:py-16 px-6">
             <h3 className="serif text-3xl md:text-4xl text-[#f1d38a] mb-6" data-aos="fade-up">Thank You</h3>
             <p className="mb-8 md:mb-10 text-sm md:text-lg opacity-80 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="50">Your love, blessings and presence mean more to us than words can express.</p>
@@ -494,12 +439,8 @@
             </p>
           </footer>
 
-          {/* Lightbox Overlay */}
           {lightboxImg && (
-            <div 
-              className="fixed inset-0 z-[100] bg-[#1f1916]/95 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
-              onClick={() => setLightboxImg(null)}
-            >
+            <div className="fixed inset-0 z-[100] bg-[#1f1916]/95 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm" onClick={() => setLightboxImg(null)}>
               <span className="absolute top-6 right-6 text-[#f1d38a] text-4xl font-bold hover:scale-110 transition">×</span>
               <img src={lightboxImg} className="max-w-full max-h-[90vh] object-contain rounded-lg border border-[#c9963c]/40 shadow-2xl" alt="Enlarged view" />
             </div>
