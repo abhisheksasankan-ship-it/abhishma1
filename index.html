@@ -55,20 +55,48 @@
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    function App() {
-      useEffect(() => {
-        if (window.AOS) {
-          window.AOS.init({ duration: 600, once: true, offset: 50 });
-        }
-      }, []);
-
+    // ==========================================
+    // ISOLATED COMPONENT 1: Navigation & Scroll
+    // Fixes the lag when scrolling past the Hero image!
+    // ==========================================
+    const FloatingNav = () => {
       const [isScrolled, setIsScrolled] = useState(false);
+      
       useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
-        window.addEventListener("scroll", handleScroll);
+        // Passive: true forces butter-smooth scrolling on mobile
+        window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
       }, []);
 
+      return (
+        <React.Fragment>
+          <a href="#" className={`fixed right-4 md:right-8 z-50 flex flex-col items-center justify-center border border-[#c9963c] bg-[#43151d] text-[#c9963c] rounded-[2rem] w-12 h-16 md:w-14 md:h-20 shadow-2xl transition-all duration-500 hover:bg-[#c9963c] hover:text-[#43151d] hover:scale-110 ${isScrolled ? 'bottom-6 md:bottom-8 opacity-100 translate-y-0' : 'bottom-0 opacity-0 translate-y-10 pointer-events-none'}`} aria-label="Back to top">
+            <span className="text-sm md:text-lg font-bold mb-0.5">↑</span>
+            <div className="monogram text-xl md:text-2xl leading-none tracking-wider pr-1">AR</div>
+          </a>
+
+          <header className={`fixed top-0 w-full flex justify-between items-center px-4 md:px-8 z-50 transition-all duration-500 ${isScrolled ? 'bg-[#43151d]/40 backdrop-blur-md shadow-sm py-3' : 'bg-gradient-to-b from-[#43151d]/70 to-transparent py-5'}`}>
+            <div className="bg-[#43151d] border border-[#c9963c] rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-[#c9963c] flex-shrink-0 shadow-md">
+              <span className="monogram text-2xl md:text-3xl leading-none pr-1 mt-1">AR</span>
+            </div>
+            <nav className="flex flex-wrap justify-end gap-3 md:gap-8 text-[9px] md:text-xs font-bold uppercase tracking-[0.15em] text-white/90">
+              <a href="#invitation" className="hover:text-[#c9963c] transition">Invitation</a>
+              <a href="#couple" className="hover:text-[#c9963c] transition">Couple</a>
+              <a href="#events" className="hover:text-[#c9963c] transition">Events</a>
+              <a href="#gallery" className="hover:text-[#c9963c] transition">Gallery</a>
+              <a href="#wishes" className="hover:text-[#c9963c] transition">Wishes</a>
+            </nav>
+          </header>
+        </React.Fragment>
+      );
+    };
+
+    // ==========================================
+    // ISOLATED COMPONENT 2: Countdown Timer
+    // Fixes the numbers stuttering!
+    // ==========================================
+    const CountdownTimer = () => {
       const calculateTimeLeft = () => {
         const diff = +new Date("2026-09-10T12:05:00") - +new Date();
         return diff > 0 ? {
@@ -80,11 +108,33 @@
       };
 
       const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+      
       useEffect(() => {
         const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
         return () => clearInterval(timer);
       }, []);
 
+      return (
+        <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 max-w-full px-2">
+          {Object.keys(timeLeft).length > 0 ? (
+            Object.entries(timeLeft).map(([unit, val]) => (
+              <div key={unit} className="bg-[#43151d] w-[4.5rem] h-20 sm:w-20 sm:h-24 md:w-32 md:h-36 flex flex-col items-center justify-center rounded-xl md:rounded-2xl shadow-[0_8px_25px_rgba(67,21,29,0.3)] border border-[#c9963c]/40 shrink-0">
+                <span className="block text-2xl sm:text-3xl md:text-5xl font-bold text-[#f1d38a] mb-1">{val}</span>
+                <span className="text-[8px] sm:text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold text-[#c9963c]">{unit}</span>
+              </div>
+            ))
+          ) : (
+            <span className="text-2xl md:text-4xl font-bold text-[#6f1f2d] serif">Today is the big day!</span>
+          )}
+        </div>
+      );
+    };
+
+    // ==========================================
+    // ISOLATED COMPONENT 3: 3D Gallery
+    // Fixes the lag when scrolling past the photos!
+    // ==========================================
+    const InteractiveGallery = () => {
       const [currentImg, setCurrentImg] = useState(0);
       const [isPaused, setIsPaused] = useState(false);
       const [lightboxImg, setLightboxImg] = useState(null);
@@ -124,6 +174,109 @@
         setTimeout(() => setIsPaused(false), 4000); 
       };
 
+      return (
+        <React.Fragment>
+          <section id="gallery" className="py-20 md:py-24 px-4 bg-[#fffaf0] overflow-hidden">
+            <div className="max-w-5xl mx-auto text-center" data-aos="fade-up">
+              <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">📸 Our Moments</p>
+              <h2 className="serif text-4xl md:text-5xl mb-12 text-[#2a241d]">A few memories before we begin forever.</h2>
+              <div 
+                className="relative h-[300px] sm:h-[400px] md:h-[550px] w-full flex items-center justify-center mt-8 mb-8 cursor-grab active:cursor-grabbing no-select"
+                style={{ touchAction: 'pan-y' }}
+                onTouchStart={(e) => handleStart(e.targetTouches[0].clientX)}
+                onTouchMove={(e) => handleMove(e.targetTouches[0].clientX)}
+                onTouchEnd={handleEnd}
+                onMouseDown={(e) => handleStart(e.clientX)}
+                onMouseMove={(e) => { if (e.buttons === 1) handleMove(e.clientX); }}
+                onMouseUp={handleEnd}
+                onMouseLeave={() => { setIsPaused(false); handleEnd(); }}
+                onMouseEnter={() => setIsPaused(true)}
+              >
+                {galleryImages.map((src, index) => {
+                  const diff = (index - currentImg + 6) % 6;
+                  
+                  const baseStyle = {
+                    willChange: 'transform, opacity',
+                    backfaceVisibility: 'hidden',
+                    WebkitFontSmoothing: 'antialiased',
+                    transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
+                  };
+
+                  let positionStyle = { 
+                    ...baseStyle,
+                    transform: 'translate3d(-50%, 0, 0) scale(0.4)', 
+                    opacity: 0, zIndex: 0, pointerEvents: 'none'
+                  };
+
+                  if (diff === 0) {
+                    positionStyle = { 
+                      ...baseStyle,
+                      transform: 'translate3d(-50%, 0, 0) scale(1)', 
+                      opacity: 1, zIndex: 30, pointerEvents: 'auto', cursor: 'zoom-in',
+                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+                    };
+                  } else if (diff === 1) {
+                    positionStyle = { 
+                      ...baseStyle,
+                      transform: 'translate3d(10%, 0, 0) scale(0.75)', 
+                      opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer'
+                    };
+                  } else if (diff === 5) {
+                    positionStyle = { 
+                      ...baseStyle,
+                      transform: 'translate3d(-110%, 0, 0) scale(0.75)', 
+                      opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer'
+                    };
+                  }
+
+                  return (
+                    <div 
+                      key={index} 
+                      className="absolute top-0 left-1/2 w-[80%] sm:w-[60%] md:w-[75%] max-w-[320px] md:max-w-[400px] aspect-[4/5] rounded-2xl overflow-hidden"
+                      style={positionStyle}
+                      onClick={(e) => {
+                        if (Math.abs(touchStartX.current - touchEndX.current) > 10) { e.preventDefault(); return; }
+                        if (diff === 1) nextImg();
+                        else if (diff === 5) prevImg();
+                        else if (diff === 0) setLightboxImg(src); 
+                      }}
+                    >
+                      <img src={src} alt={`Gallery ${index + 1}`} draggable="false" className="w-full h-full object-cover rounded-2xl pointer-events-none no-select" />
+                      {diff !== 0 && <div className="absolute inset-0 bg-black/20 rounded-2xl pointer-events-none"></div>}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center gap-2 md:gap-3 mt-4">
+                {galleryImages.map((_, idx) => (
+                  <div key={idx} onClick={() => setCurrentImg(idx)} className={`h-1.5 md:h-2 rounded-full cursor-pointer transition-all duration-500 ${currentImg === idx ? 'w-6 md:w-8 bg-[#c9963c]' : 'w-2 bg-[#c9963c]/40'}`}></div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Lightbox Overlay */}
+          {lightboxImg && (
+            <div className="fixed inset-0 z-[100] bg-[#1f1916]/95 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm" onClick={() => setLightboxImg(null)}>
+              <span className="absolute top-6 right-6 text-[#f1d38a] text-4xl font-bold hover:scale-110 transition">×</span>
+              <img src={lightboxImg} className="max-w-full max-h-[90vh] object-contain rounded-lg border border-[#c9963c]/40 shadow-2xl" alt="Enlarged view" />
+            </div>
+          )}
+        </React.Fragment>
+      );
+    };
+
+    // ==========================================
+    // THE MAIN APP 
+    // Now completely stable and never redraws on scroll!
+    // ==========================================
+    function App() {
+      useEffect(() => {
+        if (window.AOS) {
+          window.AOS.init({ duration: 600, once: true, offset: 50 });
+        }
+      }, []);
+
       const generateCalLink = (title, dates, details, location) => {
         return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
       };
@@ -149,23 +302,7 @@
       return (
         <div className="overflow-x-hidden relative bg-[#fffaf0]">
           
-          <a href="#" className={`fixed right-4 md:right-8 z-50 flex flex-col items-center justify-center border border-[#c9963c] bg-[#43151d] text-[#c9963c] rounded-[2rem] w-12 h-16 md:w-14 md:h-20 shadow-2xl transition-all duration-500 hover:bg-[#c9963c] hover:text-[#43151d] hover:scale-110 ${isScrolled ? 'bottom-6 md:bottom-8 opacity-100 translate-y-0' : 'bottom-0 opacity-0 translate-y-10 pointer-events-none'}`} aria-label="Back to top">
-            <span className="text-sm md:text-lg font-bold mb-0.5">↑</span>
-            <div className="monogram text-xl md:text-2xl leading-none tracking-wider pr-1">AR</div>
-          </a>
-
-          <header className={`fixed top-0 w-full flex justify-between items-center px-4 md:px-8 z-50 transition-all duration-500 ${isScrolled ? 'bg-[#43151d]/40 backdrop-blur-md shadow-sm py-3' : 'bg-gradient-to-b from-[#43151d]/70 to-transparent py-5'}`}>
-            <div className="bg-[#43151d] border border-[#c9963c] rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-[#c9963c] flex-shrink-0 shadow-md">
-              <span className="monogram text-2xl md:text-3xl leading-none pr-1 mt-1">AR</span>
-            </div>
-            <nav className="flex flex-wrap justify-end gap-3 md:gap-8 text-[9px] md:text-xs font-bold uppercase tracking-[0.15em] text-white/90">
-              <a href="#invitation" className="hover:text-[#c9963c] transition">Invitation</a>
-              <a href="#couple" className="hover:text-[#c9963c] transition">Couple</a>
-              <a href="#events" className="hover:text-[#c9963c] transition">Events</a>
-              <a href="#gallery" className="hover:text-[#c9963c] transition">Gallery</a>
-              <a href="#wishes" className="hover:text-[#c9963c] transition">Wishes</a>
-            </nav>
-          </header>
+          <FloatingNav />
 
           <section className="relative min-h-[90vh] md:h-screen w-full flex items-center pt-20 pb-12 bg-[#43151d] overflow-hidden">
             <img src="assets/images/hero.jpg" alt="Couple" className="absolute inset-0 w-full h-full object-cover object-center z-0" />
@@ -300,100 +437,12 @@
 
               <div className="mt-20 md:mt-24 text-center" data-aos="fade-up">
                 <p className="serif text-3xl md:text-4xl text-[#6f1f2d] mb-8 font-semibold">Counting Down To Our Forever</p>
-                <div className="flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 max-w-full px-2">
-                  {Object.keys(timeLeft).length > 0 ? (
-                    Object.entries(timeLeft).map(([unit, val]) => (
-                      <div key={unit} className="bg-[#43151d] w-[4.5rem] h-20 sm:w-20 sm:h-24 md:w-32 md:h-36 flex flex-col items-center justify-center rounded-xl md:rounded-2xl shadow-[0_8px_25px_rgba(67,21,29,0.3)] border border-[#c9963c]/40 shrink-0">
-                        <span className="block text-2xl sm:text-3xl md:text-5xl font-bold text-[#f1d38a] mb-1">{val}</span>
-                        <span className="text-[8px] sm:text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold text-[#c9963c]">{unit}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <span className="text-2xl md:text-4xl font-bold text-[#6f1f2d] serif">Today is the big day!</span>
-                  )}
-                </div>
+                <CountdownTimer />
               </div>
             </div>
           </section>
 
-          <section id="gallery" className="py-20 md:py-24 px-4 bg-[#fffaf0] overflow-hidden">
-            <div className="max-w-5xl mx-auto text-center" data-aos="fade-up">
-              <p className="text-[#6f1f2d] uppercase tracking-widest font-bold text-xs md:text-sm mb-4">📸 Our Moments</p>
-              <h2 className="serif text-4xl md:text-5xl mb-12 text-[#2a241d]">A few memories before we begin forever.</h2>
-              <div 
-                className="relative h-[300px] sm:h-[400px] md:h-[550px] w-full flex items-center justify-center mt-8 mb-8 cursor-grab active:cursor-grabbing no-select"
-                style={{ touchAction: 'pan-y' }}
-                onTouchStart={(e) => handleStart(e.targetTouches[0].clientX)}
-                onTouchMove={(e) => handleMove(e.targetTouches[0].clientX)}
-                onTouchEnd={handleEnd}
-                onMouseDown={(e) => handleStart(e.clientX)}
-                onMouseMove={(e) => { if (e.buttons === 1) handleMove(e.clientX); }}
-                onMouseUp={handleEnd}
-                onMouseLeave={() => { setIsPaused(false); handleEnd(); }}
-                onMouseEnter={() => setIsPaused(true)}
-              >
-                {galleryImages.map((src, index) => {
-                  const diff = (index - currentImg + 6) % 6;
-                  
-                  const baseStyle = {
-                    willChange: 'transform, opacity',
-                    backfaceVisibility: 'hidden',
-                    WebkitFontSmoothing: 'antialiased',
-                    transition: 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease'
-                  };
-
-                  let positionStyle = { 
-                    ...baseStyle,
-                    transform: 'translate3d(-50%, 0, 0) scale(0.4)', 
-                    opacity: 0, zIndex: 0, pointerEvents: 'none'
-                  };
-
-                  if (diff === 0) {
-                    positionStyle = { 
-                      ...baseStyle,
-                      transform: 'translate3d(-50%, 0, 0) scale(1)', 
-                      opacity: 1, zIndex: 30, pointerEvents: 'auto', cursor: 'zoom-in',
-                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
-                    };
-                  } else if (diff === 1) {
-                    positionStyle = { 
-                      ...baseStyle,
-                      transform: 'translate3d(10%, 0, 0) scale(0.75)', 
-                      opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer'
-                    };
-                  } else if (diff === 5) {
-                    positionStyle = { 
-                      ...baseStyle,
-                      transform: 'translate3d(-110%, 0, 0) scale(0.75)', 
-                      opacity: 0.6, zIndex: 20, pointerEvents: 'auto', cursor: 'pointer'
-                    };
-                  }
-
-                  return (
-                    <div 
-                      key={index} 
-                      className="absolute top-0 left-1/2 w-[80%] sm:w-[60%] md:w-[75%] max-w-[320px] md:max-w-[400px] aspect-[4/5] rounded-2xl overflow-hidden"
-                      style={positionStyle}
-                      onClick={(e) => {
-                        if (Math.abs(touchStartX.current - touchEndX.current) > 10) { e.preventDefault(); return; }
-                        if (diff === 1) nextImg();
-                        else if (diff === 5) prevImg();
-                        else if (diff === 0) setLightboxImg(src); 
-                      }}
-                    >
-                      <img src={src} alt={`Gallery ${index + 1}`} draggable="false" className="w-full h-full object-cover rounded-2xl pointer-events-none no-select" />
-                      {diff !== 0 && <div className="absolute inset-0 bg-black/20 rounded-2xl pointer-events-none"></div>}
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="flex justify-center gap-2 md:gap-3 mt-4">
-                {galleryImages.map((_, idx) => (
-                  <div key={idx} onClick={() => setCurrentImg(idx)} className={`h-1.5 md:h-2 rounded-full cursor-pointer transition-all duration-500 ${currentImg === idx ? 'w-6 md:w-8 bg-[#c9963c]' : 'w-2 bg-[#c9963c]/40'}`}></div>
-                ))}
-              </div>
-            </div>
-          </section>
+          <InteractiveGallery />
 
           <section id="wishes" className="py-20 md:py-24 px-6 bg-[#43151d] text-[#fffaf0] text-center" data-aos="fade-up">
             <div className="max-w-3xl mx-auto">
@@ -436,13 +485,6 @@
             </p>
           </footer>
 
-          {lightboxImg && (
-            <div className="fixed inset-0 z-[100] bg-[#1f1916]/95 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm" onClick={() => setLightboxImg(null)}>
-              <span className="absolute top-6 right-6 text-[#f1d38a] text-4xl font-bold hover:scale-110 transition">×</span>
-              <img src={lightboxImg} className="max-w-full max-h-[90vh] object-contain rounded-lg border border-[#c9963c]/40 shadow-2xl" alt="Enlarged view" />
-            </div>
-          )}
-          
         </div>
       );
     }
