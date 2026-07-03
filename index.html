@@ -81,9 +81,9 @@
 
       const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
       useEffect(() => {
-        const timer = setTimeout(() => setTimeLeft(calculateTimeLeft()), 1000);
-        return () => clearTimeout(timer);
-      });
+        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+        return () => clearInterval(timer);
+      }, []);
 
       const [currentImg, setCurrentImg] = useState(0);
       const [isPaused, setIsPaused] = useState(false);
@@ -402,8 +402,6 @@
               <p className="text-sm md:text-lg opacity-80 mb-12 leading-relaxed px-4">Your heartfelt wishes will make our celebration even more special.</p>
               
               <div className="bg-[#fffaf0] rounded-xl shadow-2xl p-8 md:p-10 border border-[#c9963c]/30">
-                
-                {/* NEW: Hooked up to our silent background submission function! */}
                 <form 
                   name="wedding-wishes" 
                   onSubmit={handleWishSubmit}
@@ -425,7 +423,6 @@
                     Send Wish
                   </button>
                 </form>
-
               </div>
             </div>
           </section>
