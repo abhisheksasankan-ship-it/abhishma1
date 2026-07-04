@@ -319,7 +319,7 @@
               </h1>
               <p className="text-lg md:text-xl font-bold text-white/90 mt-8 mb-10 drop-shadow-md">Thursday, 10 September 2026</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#events" className="text-center bg-[#c9963c] text-[#2a241d] px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-amber-500 transition">View Events</a>
+                <a href="#invitation" className="text-center bg-[#c9963c] text-[#2a241d] px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-amber-500 transition">View Invitation</a>
                 <a href="#wishes" className="text-center border-2 border-[#43151d] text-[#43151d] bg-transparent backdrop-blur-sm px-8 py-3.5 rounded-full font-bold shadow-lg hover:bg-[#43151d] hover:text-white transition">Leave a Wish</a>
               </div>
             </div>
@@ -334,8 +334,15 @@
                 <span className="block text-[#c9963c] text-[10px] md:text-xs font-sans font-bold tracking-[0.2em] uppercase">With</span> 
                 <span className="block">Dr. Reshma&nbsp;R</span>
               </div>
-              <div className="mt-12 mb-4">
-                <a href="#events" className="inline-block border border-[#6f1f2d] text-[#6f1f2d] bg-transparent hover:bg-[#6f1f2d] hover:text-white px-8 py-3.5 rounded-full font-bold uppercase tracking-widest text-xs transition-all shadow-sm">View Detailed Events</a>
+              
+              {/* NEW: Bouncing Scroll Arrow pointing to Couple */}
+              <div className="mt-12 md:mt-16 animate-bounce flex justify-center w-full">
+                <a href="#couple" className="flex flex-col items-center justify-center text-[#c9963c] hover:text-[#6f1f2d] transition-colors" aria-label="Scroll to Couple Section">
+                  <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold mb-2">Meet the Couple</span>
+                  <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </a>
               </div>
             </div>
           </section>
@@ -367,6 +374,17 @@
                 </div>
               </div>
             </div>
+            
+            {/* NEW: Bouncing Scroll Arrow pointing to Events */}
+            <div className="mt-12 md:mt-16 animate-bounce flex justify-center w-full col-span-full" data-aos="fade-up">
+              <a href="#events" className="flex flex-col items-center justify-center text-[#6f1f2d] hover:text-[#c9963c] transition-colors" aria-label="Scroll to Events Section">
+                <span className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-bold mb-2">View Events</span>
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </a>
+            </div>
+            
           </section>
 
           <section id="events" className="py-20 md:py-24 px-4 md:px-6 bg-[#f7ead8]">
